@@ -145,8 +145,8 @@ def run_test_mode():
         f"ATR: {TestSignal.atr:.2f}\\n\\n"
         "Telegram connection test successful."
     )
-    send_telegram(msg)
-    logger.info("TEST MODE Telegram message sent | %s", TestSignal.symbol)
+    telegram(msg)
+    log.info("TEST MODE Telegram message sent | %s", TestSignal.symbol)
 
 def main():
     if TEST_MODE:
