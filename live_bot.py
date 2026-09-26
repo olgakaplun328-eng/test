@@ -114,29 +114,39 @@ def scan_once():
     return signals
 
 def run_test_mode():
-    """Send one deterministic Telegram test alert without querying MEXC or placing orders."""
-    symbol = SYMBOLS[0] if SYMBOLS else 'BTCUSDT'
-    entry = 100000.0
-    atr = 500.0
-    sl = entry - ATR_STOP_MULT * atr
-    tp = entry + ATR_TARGET_MULT * atr
+    """Send one deterministic Telegram test signal without querying MEXC or placing orders."""
+    atr_value = 100.0
+    entry_value = 60000.0
+    sl_value = entry_value - 2 * atr_value
+    tp1_value = entry_value + 2 * atr_value
+    tp2_value = entry_value + 3 * atr_value
+
     class TestSignal:
-        direction = 'long'
-        entry_price = entry
-        stop_loss = sl
-        take_profit = tp
-        atr = atr
+        symbol = "BTCUSDT"
+        direction = "LONG"
+        entry = entry_value
+        stop_loss = sl_value
+        take_profit_1 = tp1_value
+        take_profit_2 = tp2_value
+        atr = atr_value
         reasons = [
-            'TEST_MODE',
-            f'squeeze={MIN_SQUEEZE_BARS}',
-            f'volume={MIN_VOLUME_RATIO:.2f}x',
-            'rsi=55.0',
-            'momentum=1.20ATR'
+            "TEST MODE",
+            "Synthetic signal — no real market data",
+            "No exchange order will be placed",
         ]
-    msg = make_message(symbol, TestSignal())
-    msg = '🧪 TEST MODE — це тестове повідомлення, угода НЕ відкривається.\\n\\n' + msg
-    telegram(msg)
-    log.info('TEST MODE Telegram message sent | %s', symbol)
+
+    msg = (
+        "🧪 TEST MODE — це тестове повідомлення. Угода НЕ відкривається.\\n\\n"
+        f"📊 {TestSignal.symbol} {TestSignal.direction}\\n"
+        f"Entry: {TestSignal.entry:.2f}\\n"
+        f"SL: {TestSignal.stop_loss:.2f}\\n"
+        f"TP1: {TestSignal.take_profit_1:.2f}\\n"
+        f"TP2: {TestSignal.take_profit_2:.2f}\\n"
+        f"ATR: {TestSignal.atr:.2f}\\n\\n"
+        "Telegram connection test successful."
+    )
+    send_telegram(msg)
+    logger.info("TEST MODE Telegram message sent | %s", TestSignal.symbol)
 
 def main():
     if TEST_MODE:
